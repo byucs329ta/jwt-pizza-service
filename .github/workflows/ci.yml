@@ -96,11 +96,13 @@ jobs:
           cd dist
           ls -la
           docker build --platform=linux/arm64 -t $ECR_REGISTRY/$ECR_REPOSITORY --push .
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
       - name: Download task definition
         run: |
           aws ecs describe-task-definition --region us-west-2 --task-definition jwt-pizza-service --query taskDefinition > task-definition.json
           echo $(cat task-definition.json | jq 'del(.taskDefinitionArn, .requiresAttributes, .compatibilities, .revision, .status, .registeredAt, .registeredBy)') > task-definition.json
+
       - name: Create new task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -108,6 +110,7 @@ jobs:
           task-definition: task-definition.json
           container-name: jwt-pizza-service
           image: ${{ steps.build-image.outputs.image }}
+
       - name: Deploy new task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
