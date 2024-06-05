@@ -67,6 +67,8 @@ jobs:
 
       - name: Create OIDC token to AWS
         uses: aws-actions/configure-aws-credentials@v4
+        permissions:
+          id-token: write
         with:
           audience: sts.amazonaws.com
           aws-region: us-west-2
