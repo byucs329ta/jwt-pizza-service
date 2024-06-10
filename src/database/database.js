@@ -33,7 +33,6 @@ class DB {
     const connection = await this.getConnection();
     try {
       user.password = await bcrypt.hash(user.password, 10);
-
       const userResult = await this.query(connection, `INSERT INTO user (name, email, password) VALUES (?, ?, ?)`, [user.name, user.email, user.password]);
       const userId = userResult.insertId;
       for (const role of user.roles) {
